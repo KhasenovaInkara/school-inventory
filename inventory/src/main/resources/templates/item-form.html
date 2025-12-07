@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Управление предметом</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            /* 1. Фон как в чате (серый + дудлы) */
+            background-color: #e4e4e4; 
+            background-image: url('https://img.freepik.com/free-vector/back-school-doodle-seamless-pattern_1284-558.jpg?w=740&t=st=1686000000~exp=1686000600~hmac=xyz');
+            background-repeat: repeat;
+            background-size: 300px;
+            background-blend-mode: overlay;
+            
+            /* Центровка формы по вертикали */
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 40px;
+            padding-bottom: 40px;
+        }
+
+        /* 2. Стиль карточки (белая с тенью) */
+        .form-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            border: none; /* Убираем стандартную рамку Bootstrap */
+            overflow: hidden; /* Чтобы шапка не вылезала за скругления */
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Красивый градиент в шапке */
+            color: white;
+            border-bottom: none;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            
+            <div class="card form-card">
+                <div class="card-header text-center">
+                    <h4 class="mb-0" th:if="${item.id == null}">✨ Новый предмет</h4>
+                    <h4 class="mb-0" th:if="${item.id != null}">✏️ Редактирование</h4>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form th:action="@{/save}" th:object="${item}" method="post">
+                        <input type="hidden" th:field="*{id}">
+
+                        <div class="mb-3">
+                            <label for="title" class="form-label fw-bold">Название</label>
+                            <input type="text" class="form-control" id="title" th:field="*{title}" 
+                                   placeholder="Что добавляем?" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="category" class="form-label fw-bold">Категория</label>
+                            <select class="form-select" id="category" th:field="*{category}">
+                                <option value="Мебель">🪑 Мебель</option>
+                                <option value="Электроника">💻 Электроника</option>
+                                <option value="Книги">📚 Книги</option>
+                                <option value="Спорт">⚽ Спорт</option>
+                                <option value="Другое">📦 Другое</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="quantity" class="form-label fw-bold">Количество</label>
+                            <input type="number" class="form-control" id="quantity" th:field="*{quantity}" 
+                                   min="0" placeholder="Сколько штук?" required>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Сохранить</button>
+                            <a href="/" class="btn btn-outline-secondary">Отмена</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

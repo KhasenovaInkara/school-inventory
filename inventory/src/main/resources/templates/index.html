@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Школьный Инвентарь</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            /* 1. Основной цвет фона (бежево-серый, как в чатах) */
+            background-color: #e4e4e4; 
+            
+            /* 2. Картинка-паттерн (школьные дудлы: глобус, линейка, карандаш) */
+            background-image: url('https://img.freepik.com/free-vector/back-school-doodle-seamless-pattern_1284-558.jpg?w=740&t=st=1686000000~exp=1686000600~hmac=xyz');
+            
+            /* 3. Делаем узор повторяющимся и полупрозрачным */
+            background-repeat: repeat;
+            background-size: 300px; /* Размер рисунков */
+            background-blend-mode: overlay; /* Магия: смешиваем картинку с серым цветом, чтобы она была бледной */
+        }
+
+        /* Белая подложка для контента, чтобы текст не сливался с фоном */
+        .main-card {
+            background-color: rgba(255, 255, 255, 0.95); /* Белый с легкой прозрачностью */
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Мягкая тень */
+            margin-top: 40px;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="main-card">
+        
+        <h1 class="text-center mb-4">🎓 Система учёта школьного инвентаря</h1>
+
+        <div th:if="${message}" class="alert alert-success alert-dismissible fade show">
+            <strong th:text="${message}"></strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+            <strong th:text="${error}"></strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-5">
+                <form th:action="@{/}" method="get" class="d-flex gap-2">
+                    <input type="text" name="keyword" class="form-control" 
+                           placeholder="Найти предмет..." th:value="${keyword}">
+                    <button type="submit" class="btn btn-primary">🔍</button>
+                    <a href="/" class="btn btn-outline-secondary">❌</a>
+                </form>
+            </div>
+            
+            <div class="col-md-7 text-end">
+                <a sec:authorize="hasRole('ADMIN')" href="/requests" class="btn btn-warning text-dark me-1">🔔 Заявки</a>
+                <a sec:authorize="hasRole('ADMIN')" href="/borrowed" class="btn btn-primary me-1">📦 Выданное</a>
+                <a sec:authorize="hasRole('ADMIN')" href="/history" class="btn btn-info text-white me-1">📜 История</a>
+                
+                <form th:action="@{/logout}" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-secondary">Выход</button>
+                </form>
+                
+                <a sec:authorize="hasRole('ADMIN')" href="/add" class="btn btn-success ms-1">+ Добавить</a>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered text-center align-middle">
+                <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Название</th>
+                    <th>Категория</th>
+                    <th>Количество</th>
+                    <th>Действия</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${items}">
+                    <td th:text="${item.id}">1</td>
+                    <td th:text="${item.title}" class="text-start fw-bold">Парта</td>
+                    <td>
+                        <span class="badge bg-secondary" th:text="${item.category}">Мебель</span>
+                    </td>
+                    
+                    <td>
+                        <span th:if="${item.quantity > 0}" class="badge bg-success" th:text="${item.quantity} + ' шт.'">10 шт.</span>
+                        <span th:if="${item.quantity == 0}" class="badge bg-danger">Нет в наличии</span>
+                    </td>
+
+                    <td>
+                        <a th:if="${item.quantity > 0}" 
+                           sec:authorize="hasRole('USER')"
+                           th:href="@{/request/{id}(id=${item.id})}" 
+                           class="btn btn-sm btn-outline-primary">🙋‍♂️ Запросить</a>
+                        
+                        <a sec:authorize="hasRole('ADMIN')" th:href="@{/return/{id}(id=${item.id})}" 
+                           class="btn btn-sm btn-outline-secondary" title="Быстрый возврат">+1</a>
+
+                        <span sec:authorize="hasRole('ADMIN')" class="ms-2">
+                            <a th:href="@{/edit/{id}(id=${item.id})}" class="btn btn-sm btn-warning">✏️</a>
+                            <a th:href="@{/delete/{id}(id=${item.id})}" 
+                               class="btn btn-sm btn-danger"
+                               onclick="return confirm('Удалить этот предмет?');">🗑️</a>
+                        </span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        
+    </div> </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Входящие заявки</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between mb-4">
+        <h1>🔔 Заявки на выдачу</h1>
+        <a href="/" class="btn btn-outline-primary">← Назад к списку</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-striped align-middle">
+                <thead class="table-dark">
+                <tr>
+                    <th>Время</th>
+                    <th>Кто просит</th>
+                    <th>Что просит</th>
+                    <th>Наличие</th>
+                    <th>Решение</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="req : ${requests}">
+                    <td th:text="${#temporals.format(req.createdAt, 'HH:mm dd.MM')}"></td>
+                    <td>
+                        <div class="fw-bold" th:text="${req.requester.fullName}">Иванов И.И.</div>
+                        <div class="text-muted small" th:text="${req.requester.location}">Каб. 101</div>
+                    </td>
+                    <td th:text="${req.item.title}">Проектор</td>
+                    <td>
+                        <span th:text="${req.item.quantity} + ' шт.'">5 шт</span>
+                    </td>
+                    <td>
+                        <a th:href="@{/approve/{id}(id=${req.id})}" class="btn btn-success btn-sm">✅ Выдать</a>
+                        <a th:href="@{/reject/{id}(id=${req.id})}" class="btn btn-danger btn-sm">❌ Отказать</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
